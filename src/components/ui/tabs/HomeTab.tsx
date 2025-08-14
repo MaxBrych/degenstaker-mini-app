@@ -99,16 +99,39 @@ export function HomeTab() {
           </div>
         </div>
       )}
-      <div className="flex items-center gap-3">
-        {displayPfp ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={displayPfp} alt="pfp" className="w-10 h-10 rounded-full" />
-        ) : (
-          <div className="w-10 h-10 rounded-full bg-gray-700" />
-        )}
-        <div>
-          <div className="text-sm font-medium">{displayHandle ? `@${displayHandle}` : 'Unknown user'}</div>
-          <div className="text-xs text-gray-500 dark:text-gray-400">FID: {displayFid}</div>
+      {/* Modern slick header above cards */}
+      <div className="relative overflow-hidden rounded-2xl border border-gray-200 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 p-4">
+        <div className="flex items-center gap-3">
+          {displayPfp ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={displayPfp} alt="pfp" className="w-12 h-12 rounded-xl object-cover" />
+          ) : (
+            <div className="w-12 h-12 rounded-xl bg-gray-700" />
+          )}
+          <div className="flex-1">
+            <div className="text-sm text-gray-500">Welcome back</div>
+            <div className="text-base font-semibold">{displayHandle ? `@${displayHandle}` : 'Unknown user'}</div>
+          </div>
+          <div className="text-right">
+            <div className="text-[10px] uppercase tracking-wide text-gray-500">FID</div>
+            <div className="text-sm font-mono">{displayFid}</div>
+          </div>
+        </div>
+        <div className="mt-3 grid grid-cols-3 gap-2 text-center">
+          <div className="rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 px-2 py-2">
+            <div className="text-[10px] text-gray-500">Daily</div>
+            <div className="text-sm font-semibold">{(() => {
+              const p = 7.7; return `${p}%`;
+            })()}</div>
+          </div>
+          <div className="rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 px-2 py-2">
+            <div className="text-[10px] text-gray-500">Term</div>
+            <div className="text-sm font-semibold">21d</div>
+          </div>
+          <div className="rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 px-2 py-2">
+            <div className="text-[10px] text-gray-500">Min</div>
+            <div className="text-sm font-semibold">{investMin.data ? `${formatUnits(investMin.data as bigint, 18)} DEGEN` : '-'}</div>
+          </div>
         </div>
       </div>
       <Stats address={address as `0x${string}` | undefined} />
