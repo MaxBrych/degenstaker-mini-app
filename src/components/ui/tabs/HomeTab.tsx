@@ -113,7 +113,28 @@ export function HomeTab() {
       </div>
       <Stats address={address as `0x${string}` | undefined} />
 
-      <div className="grid gap-3">
+      {/* Mobile: horizontal scrollable row with snapping */}
+      <div className="md:hidden">
+        <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-3 -mx-4 px-4">
+          {[0,1,2].map((idx) => (
+            <div key={idx} className="snap-center shrink-0 w-[85%]">
+              <StakingCard
+                planIndex={idx as 0|1|2}
+                investMin={investMin.data as bigint | undefined}
+                writeContract={writeContract}
+                isPending={isPending}
+                address={address as `0x${string}` | undefined}
+                disabled={!address}
+                notify={notify}
+                deposits={userDeposits.data as any[] | undefined}
+                checkpoint={userCheckpoint.data as bigint | undefined}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* Desktop: three-column grid */}
+      <div className="hidden md:grid md:grid-cols-3 md:gap-4">
         {[0,1,2].map((idx) => (
           <StakingCard
             key={idx}
@@ -290,7 +311,7 @@ function StakingCard({ planIndex, investMin, writeContract, isPending, address, 
   return (
     <div className="relative max-w-sm mx-auto">
       <div
-        className={`relative rounded-xl p-6 transition-all duration-500 overflow-hidden ${
+        className={`relative h-[460px] rounded-xl p-6 transition-colors duration-500 overflow-hidden ${
           active ? 'text-black' : 'bg-gray-50 text-gray-900 border border-gray-200'
         }`}
         style={{ backgroundColor: active ? '#EDE6F7' as const : undefined }}
@@ -301,10 +322,10 @@ function StakingCard({ planIndex, investMin, writeContract, isPending, address, 
           </div>
         )}
 
-        {/* Popular pill in active state like mock */}
-        {active && (
-          <div className="relative z-10 mb-4">
-            <div className="inline-block bg-purple-600 text-white text-xs font-semibold px-3 py-1 rounded-full">Popular</div>
+        {/* Popular badge (centered) for plan 1 */}
+        {planIndex === 1 && (
+          <div className="absolute -top-1 left-1/2 -translate-x-1/2 z-20">
+            <span className="bg-purple-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow">Popular</span>
           </div>
         )}
 
