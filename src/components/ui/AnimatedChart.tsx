@@ -1,26 +1,37 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
-export default function AnimatedChart({ isActive, returnValue, color = "purple" }: { isActive: boolean; returnValue: number; color?: "purple" | "gray"; }) {
-  // Normalize scale 0.08 .. 1
-  const normalized = Math.max(0.08, Math.min(1, (returnValue || 0) / 1000));
-  const primary = color === "purple" ? "#8B5CF6" : "#9CA3AF";
-  const secondary = color === "purple" ? "#A78BFA" : "#D1D5DB";
+export default function AnimatedChart({ isActive, returnValue, color = "purple" }: { isActive: boolean; returnValue: number; color?: string; }) {
+  const [animating, setAnimating] = useState(false);
+  useEffect(() => { setAnimating(isActive); }, [isActive]);
+
+  const pathData = useMemo(() => {
+    const baseHeight = 80;
+    const maxCurve = Math.min((returnValue || 0) / 10000, 8);
+    const exponentialFactor = 1 + maxCurve * 0.4;
+    const p1 = baseHeight - 10 * exponentialFactor;
+    const p2 = baseHeight - 25 * exponentialFactor;
+    const p3 = baseHeight - 45 * exponentialFactor;
+    const endY = Math.max(5, baseHeight - 65 * exponentialFactor);
+    return `M0,${baseHeight} Q30,${p1} 60,${p2} T120,${p3} T200,${endY}`;
+  }, [returnValue]);
+
+  const fillPath = `${pathData} L200,100 L0,100 Z`;
+  const colorMap: Record<string, string> = { purple: '#a855f7', green: '#22c55e', gray: '#9ca3af' };
+  const stroke = colorMap[color] || colorMap.purple;
 
   return (
-    <div className="absolute inset-0 pointer-events-none">
-      <svg viewBox="0 0 100 100" className="absolute right-[-20px] bottom-[-20px] h-56 w-56" style={{ opacity: isActive ? 0.9 : 0.5 }}>
-        <defs>
-          <linearGradient id="g-minimal-1" x1="0" x2="1" y1="0" y2="1">
-            <stop offset="0%" stopColor={primary} stopOpacity={0.85} />
-            <stop offset="100%" stopColor={secondary} stopOpacity={0.7} />
-          </linearGradient>
-        </defs>
-        <g style={{ transform: `scaleY(${normalized})`, transformOrigin: "100% 100%", transition: "transform 450ms cubic-bezier(0.2, 0.8, 0.2, 1)" }}>
-          <path d="M0,80 C20,60 40,90 60,70 C75,60 85,70 100,55 L100,100 L0,100 Z" fill="url(#g-minimal-1)" />
-        </g>
-      </svg>
-    </div>
+    <svg className="absolute inset-0 w-full h-full opacity-30" viewBox="0 0 200 100" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id={`gradient-${color}`} x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor={stroke} stopOpacity="0.6" />
+          <stop offset="100%" stopColor={stroke} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+
+      <path d={fillPath} fill={`url(#gradient-${color})`} style={{ opacity: animating ? 1 : 0, transition: 'opacity 0.3s ease-out, d 0.5s ease-out' }} />
+      <path d={pathData} fill="none" stroke={stroke} strokeWidth="0.5" strokeLinecap="round" strokeDasharray="400" strokeDashoffset={animating ? 0 : 400} style={{ transition: 'stroke-dashoffset 1.8s cubic-bezier(0.4, 0, 0.2, 1), d 0.5s ease-out' }} />
+    </svg>
   );
 }

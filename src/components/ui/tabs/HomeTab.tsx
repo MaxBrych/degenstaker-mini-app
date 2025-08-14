@@ -5,7 +5,8 @@ import { formatUnits, parseUnits, zeroAddress, encodeFunctionData } from "viem";
 import { useAccount, useReadContract, useWriteContract, useSendTransaction } from "wagmi";
 import { base } from "wagmi/chains";
 import { Button } from "../Button";
-import AnimatedNumber from "../AnimatedNumber";
+import { NumericFormat } from "react-number-format";
+import NumberFlow from "@number-flow/react";
 import AnimatedChart from "../AnimatedChart";
 import { STAKER_ABI, STAKER_ADDRESS, ERC20_ABI, DEGEN_ADDRESS } from "~/lib/staking";
 import { useMiniApp } from "@neynar/react";
@@ -323,7 +324,12 @@ function StakingCard({ planIndex, investMin, writeContract, isPending, address, 
         <div className="relative z-10 text-center mb-6">
           <p className={`text-sm mb-2 ${active ? 'text-gray-700' : 'text-gray-600'}`}>Expected Profit</p>
           <div className="mb-1">
-            <AnimatedNumber value={profitNumber} className="text-4xl font-medium leading-tight" style={{ color: '#240076' }} />
+            <NumberFlow
+              value={profitNumber}
+              format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
+              className="text-4xl font-medium leading-tight"
+              style={{ color: active ? '#240076' : '#9ca3af' }}
+            />
           </div>
           <p className={`text-sm font-medium ${active ? 'text-gray-700' : 'text-gray-500'}`}>$DEGEN</p>
         </div>
@@ -331,11 +337,13 @@ function StakingCard({ planIndex, investMin, writeContract, isPending, address, 
         {/* Amount input */}
         <div className="relative z-10 mb-6">
           <label className={`block text-sm font-medium mb-2 ${active ? 'text-gray-700' : 'text-gray-700'}`}>Investment Amount</label>
-          <input
-            type="number"
+          <NumericFormat
             placeholder="1 DEGEN"
             value={amount}
-            onChange={(e)=>setAmount(e.target.value)}
+            onValueChange={(values)=> setAmount(values.value)}
+            thousandSeparator
+            decimalScale={2}
+            allowNegative={false}
             className={`w-full px-4 py-2.5 rounded-md text-base font-medium transition-all bg-white text-gray-900 placeholder-gray-400 border border-gray-300 focus:border-gray-400 focus:outline-none focus:ring-0`}
           />
         </div>

@@ -49,7 +49,9 @@
     "siwe": "^3.0.0",
     "@neynar/nodejs-sdk": "^2.19.0",
     "@farcaster/auth-kit": ">=0.6.0 <1.0.0",
-    "next-auth": "^4.24.11"
+    "next-auth": "^4.24.11",
+    "@number-flow/react": "^0.4.0",
+    "react-number-format": "^5.4.2"
   },
   "devDependencies": {
     "@types/inquirer": "^9.0.8",
