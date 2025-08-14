@@ -8,6 +8,9 @@ import { SignIn } from '../wallet/SignIn';
 import { type Haptics } from '@farcaster/miniapp-sdk';
 import { APP_URL } from '~/lib/constants';
 import { NeynarAuthButton } from '../NeynarAuthButton';
+import { useAccount, useReadContract } from 'wagmi';
+import { base } from 'wagmi/chains';
+import { STAKER_ABI, STAKER_ADDRESS } from '~/lib/staking';
 
 /**
  * ActionsTab component handles mini app actions like sharing, notifications, and haptic feedback.
@@ -32,6 +35,9 @@ export function ActionsTab() {
   // --- Hooks ---
   const { actions, added, notificationDetails, haptics, context } =
     useMiniApp();
+  const [lookupState, setLookupState] = useState<'idle'|'loading'|'error'|'ok'>('idle');
+  const [lookupInput, setLookupInput] = useState<string>("");
+  const [lookupResult, setLookupResult] = useState<any>(null);
 
   // --- State ---
   const [notificationState, setNotificationState] = useState({
@@ -40,6 +46,10 @@ export function ActionsTab() {
   });
   const [selectedHapticIntensity, setSelectedHapticIntensity] =
     useState<Haptics.ImpactOccurredType>('medium');
+
+  // Show simple contract stats here as well
+  const { address } = useAccount();
+  const available = useReadContract({ address: STAKER_ADDRESS, abi: STAKER_ABI, functionName: 'getUserAvailable', args: [address as `0x${string}` ?? '0x0000000000000000000000000000000000000000'], chainId: base.id });
 
   // --- Handlers ---
   /**
@@ -142,6 +152,12 @@ export function ActionsTab() {
       {/* Neynar Authentication */}
       <NeynarAuthButton />
 
+      {/* Contract overview */}
+      <div className="text-sm w-full flex items-center justify-between">
+        <span>Available:</span>
+        <span className="font-mono">{available.data ? String(available.data) : '-'}</span>
+      </div>
+
       {/* Mini app actions */}
       <Button
         onClick={() =>
@@ -178,6 +194,38 @@ export function ActionsTab() {
       >
         {notificationState.shareUrlCopied ? 'Copied!' : 'Copy share URL'}
       </Button>
+
+      {/* Lookup Farcaster user by Ethereum address via Neynar API */}
+      <div className="space-y-2 w-full">
+        <label className="block text-sm font-medium">Lookup user by EVM address</label>
+        <input
+          value={lookupInput}
+          onChange={(e)=>setLookupInput(e.target.value)}
+          placeholder="0x..."
+          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary"
+        />
+        <Button
+          onClick={async ()=>{
+            try {
+              setLookupState('loading');
+              const res = await fetch(`/api/user-by-eth?address=${encodeURIComponent(lookupInput)}`);
+              const json = await res.json();
+              if (!res.ok) throw new Error(json?.error || 'Lookup failed');
+              setLookupResult(json);
+              setLookupState('ok');
+            } catch (e) {
+              setLookupState('error');
+              setLookupResult({ error: String(e) });
+            }
+          }}
+          className="w-full"
+        >
+          {lookupState==='loading' ? 'Looking up...' : 'Lookup'}
+        </Button>
+        {lookupResult && (
+          <pre className="text-xs whitespace-pre-wrap break-all p-2 rounded bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 max-h-40 overflow-auto">{JSON.stringify(lookupResult,null,2)}</pre>
+        )}
+      </div>
 
       {/* Haptic feedback controls */}
       <div className="space-y-2">
