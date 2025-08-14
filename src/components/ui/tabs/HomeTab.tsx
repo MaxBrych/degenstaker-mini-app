@@ -5,6 +5,8 @@ import { formatUnits, parseUnits, zeroAddress, encodeFunctionData } from "viem";
 import { useAccount, useReadContract, useWriteContract, useSendTransaction } from "wagmi";
 import { base } from "wagmi/chains";
 import { Button } from "../Button";
+import AnimatedNumber from "../AnimatedNumber";
+import AnimatedChart from "../AnimatedChart";
 import { STAKER_ABI, STAKER_ADDRESS, ERC20_ABI, DEGEN_ADDRESS } from "~/lib/staking";
 import { useMiniApp } from "@neynar/react";
 import { useSession } from "next-auth/react";
@@ -193,9 +195,8 @@ function StakingCard({ planIndex, investMin, writeContract, isPending, address, 
   checkpoint?: bigint;
 }) {
   const [amount, setAmount] = useState<string>('');
-  const [referrer, setReferrer] = useState<string>('');
-  const [snoozeDays, setSnoozeDays] = useState<string>('1');
-  const [snoozeIndex, setSnoozeIndex] = useState<string>('0');
+  const [snoozeDays, setSnoozeDays] = useState<string>('0');
+  const [advancedOpen, setAdvancedOpen] = useState<boolean>(false);
   const { sendTransaction } = useSendTransaction();
 
   const planInfo = useReadContract({ address: STAKER_ADDRESS, abi: STAKER_ABI, functionName: 'getPlanInfo', args: [planIndex], chainId: base.id });
@@ -203,28 +204,11 @@ function StakingCard({ planIndex, investMin, writeContract, isPending, address, 
   const depositAmount = useMemo(() => { try { return parseUnits(amount && amount.length>0 ? amount : '0', 18);} catch { return 0n;} }, [amount]);
   const result = useReadContract({ address: STAKER_ADDRESS, abi: STAKER_ABI, functionName: 'getResult', args: [planIndex, depositAmount], chainId: base.id });
 
-  // Animated profit number derived from contract result
+  // Profit number from contract result (animated via AnimatedNumber)
   const rawProfit = (result.data ? (result.data as any)[1] as bigint : 0n);
   const profitNumber = useMemo(() => {
     try { return Number(formatUnits(rawProfit, 18)); } catch { return 0; }
   }, [rawProfit]);
-  const [animatedProfit, setAnimatedProfit] = useState<number>(0);
-  useEffect(() => {
-    // Smooth animate between previous and next values
-    let raf = 0;
-    const start = performance.now();
-    const startVal = animatedProfit;
-    const delta = profitNumber - startVal;
-    const duration = 600;
-    const tick = (now: number) => {
-      const t = Math.min(1, (now - start) / duration);
-      const eased = 1 - Math.pow(1 - t, 3);
-      setAnimatedProfit(startVal + delta * eased);
-      if (t < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [profitNumber]);
 
   const approveThenInvest = async () => {
     if (!address || depositAmount <= 0n) return;
@@ -241,7 +225,7 @@ function StakingCard({ planIndex, investMin, writeContract, isPending, address, 
           { onSuccess: () => { notify('success', 'Approval successful'); resolve(); }, onError: (e) => { notify('error', `Approval failed: ${String((e as any)?.message || e)}`); reject(e); } }
         ));
       }
-      const ref = /^0x[0-9a-fA-F]{40}$/.test(referrer) ? (referrer as `0x${string}`) : (zeroAddress as `0x${string}`);
+      const ref = zeroAddress as `0x${string}`;
       const investData = encodeFunctionData({
         abi: STAKER_ABI,
         functionName: 'invest',
@@ -293,114 +277,130 @@ function StakingCard({ planIndex, investMin, writeContract, isPending, address, 
     );
   };
 
-  const snoozeAt = () => {
-    const data = encodeFunctionData({ abi: STAKER_ABI, functionName: 'snoozeAt', args: [BigInt(Number(snoozeIndex||'0')), BigInt(Number(snoozeDays||'1'))] });
-    sendTransaction(
-      { to: STAKER_ADDRESS, data, chainId: base.id },
-      { onSuccess: () => notify('success', `Snoozed #${snoozeIndex} by ${snoozeDays} day(s)`), onError: (e) => notify('error', `Snooze failed: ${String((e as any)?.message || e)}`) }
-    );
-  };
+  // Minimal design only exposes Snooze All for extended days
 
   const time = planInfo.data ? (planInfo.data as any)[0] as bigint : undefined;
   const percent = planInfo.data ? (planInfo.data as any)[1] as bigint : undefined;
 
-  const active = depositAmount > 0n;
+  const active = depositAmount > 0n && profitNumber > 0;
   const dailyPercent = percent ? (Number(percent) / 10).toFixed(1) : undefined;
   const days = time ? Number(time) : undefined;
 
-  // Chart scale reacts to profit and animates with CSS transform
-  const normalizedForChart = Math.max(0.08, Math.min(1, (profitNumber || 0) / 1000));
-
   return (
-    <div className={`relative overflow-hidden rounded-2xl border p-4 space-y-4 transition-colors ${active ? 'border-violet-400 bg-gradient-to-b from-violet-100 to-violet-200 dark:from-violet-900/30 dark:to-violet-800/20' : 'border-gray-200 bg-gradient-to-b from-white to-gray-100 dark:from-gray-900 dark:to-gray-800'}`}>
-      {/* Popular pill when active */}
-      {active && (
-        <div className="absolute -top-2 left-4">
-          <span className="text-[10px] uppercase tracking-wide bg-gradient-to-r from-violet-600 to-fuchsia-500 text-white px-2 py-1 rounded-full shadow">Popular</span>
-        </div>
-      )}
-
-      {/* Decorative chart shape */}
-      <div className="pointer-events-none absolute -bottom-14 -right-10 h-48 w-48">
-        <svg viewBox="0 0 100 100" className="h-full w-full opacity-60">
-          <defs>
-            <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
-              <stop offset="0%" stopColor={active ? '#8B5CF6' : '#D1D5DB'} stopOpacity="0.8" />
-              <stop offset="100%" stopColor={active ? '#A78BFA' : '#E5E7EB'} stopOpacity="0.6" />
-            </linearGradient>
-          </defs>
-          <g style={{ transform: `scaleY(${normalizedForChart})`, transformOrigin: '100% 100%', transition: 'transform 400ms ease' }}>
-            <path d="M0,80 C20,60 40,90 60,70 C75,60 85,70 100,55 L100,100 L0,100 Z" fill="url(#g1)" />
-          </g>
-        </svg>
-      </div>
-
-      {/* Header */}
-      <div className="flex items-center justify-between relative z-10">
-        <div className={`flex items-center gap-2 text-sm font-semibold ${active ? 'text-violet-900 dark:text-violet-100' : 'text-gray-800 dark:text-gray-200'}`}>
-          <span>Growth Plan</span>
-        </div>
-        <div className={`text-xs ${active ? 'text-violet-700/80 dark:text-violet-300/80' : 'text-gray-500'}`}>
-          {dailyPercent && days ? `${dailyPercent}% daily • ${days} days` : '—'}
-        </div>
-      </div>
-
-      {/* Expected Profit */}
-      <div className="relative z-10 text-center py-2">
-        <div className={`text-xs ${active ? 'text-violet-800/80 dark:text-violet-200/80' : 'text-gray-500'}`}>Expected Profit</div>
-        <div className={`font-extrabold tracking-tight ${active ? 'text-violet-900 dark:text-white' : 'text-gray-700 dark:text-gray-200'}`} style={{ fontSize: '40px', lineHeight: 1 }}>
-          {Number.isFinite(animatedProfit) ? animatedProfit.toFixed(2) : '0.00'}
-        </div>
-        <div className={`text-xs ${active ? 'text-violet-900/70 dark:text-violet-200/70' : 'text-gray-500'}`}>$DEGEN</div>
-      </div>
-
-      {/* Amount input */}
-      <div className="relative z-10">
-        <label className={`block text-[11px] mb-1 ${active ? 'text-violet-900/80 dark:text-violet-100/80' : 'text-gray-600'}`}>Investment Amount</label>
-        <input
-          value={amount}
-          onChange={(e)=>setAmount(e.target.value)}
-          placeholder={investMin? `${formatUnits(investMin,18)} DEGEN` : '1 DEGEN'}
-          className={`input text-sm ${active ? 'bg-white/90 border-violet-300 focus:border-violet-500 focus:ring-violet-500' : ''}`}
-        />
-      </div>
-
-      {/* Actions */}
-      <div className="relative z-10 grid grid-cols-2 gap-2">
-        <Button
-          onClick={approveThenInvest}
-          disabled={!address || isPending || depositAmount<=0n}
-          className={`${active ? 'bg-gradient-to-r from-violet-600 to-fuchsia-500 hover:from-violet-700 hover:to-fuchsia-600 text-white' : 'bg-black text-white hover:bg-gray-900'} border-0 w-full`}
-        >
-          Invest
-        </Button>
-        <Button
-          onClick={withdraw}
-          disabled={disabled || isPending}
-          className={`${active ? 'bg-violet-300/50 text-violet-900 border border-violet-400 hover:bg-violet-300/70' : 'bg-white text-gray-900 border border-gray-300 hover:bg-gray-100'} w-full`}
-        >
-          Withdraw
-        </Button>
-      </div>
-
-      {/* Advanced options */}
-      <details className="relative z-10">
-        <summary className={`text-xs cursor-pointer ${active ? 'text-violet-900/80 dark:text-violet-200/80' : 'text-gray-600'}`}>Advanced options</summary>
-        <div className="mt-2 grid grid-cols-3 gap-2 items-end">
-          <div>
-            <label className="block text-xs mb-1">Days</label>
-            <input value={snoozeDays} onChange={(e)=>setSnoozeDays(e.target.value)} className="input text-sm" />
+    <div className="relative max-w-sm mx-auto">
+      <div
+        className={`relative rounded-xl p-6 transition-all duration-500 overflow-hidden ${
+          active ? 'text-black' : 'bg-gray-50 text-gray-900 border border-gray-200'
+        }`}
+        style={{ backgroundColor: active ? '#EDE6F7' as const : undefined }}
+      >
+        {active && (
+          <div className="absolute inset-0">
+            <AnimatedChart isActive={active} returnValue={profitNumber} color="purple" />
           </div>
-          <Button onClick={snoozeAll} className="w-full" variant="outline" disabled={disabled}>Snooze All</Button>
-          <div>
-            <label className="block text-xs mb-1">Index</label>
-            <input value={snoozeIndex} onChange={(e)=>setSnoozeIndex(e.target.value)} className="input text-sm" />
+        )}
+
+        {/* Popular pill in active state like mock */}
+        {active && (
+          <div className="relative z-10 mb-4">
+            <div className="inline-block bg-purple-600 text-white text-xs font-semibold px-3 py-1 rounded-full">Popular</div>
           </div>
-          <div className="col-span-2">
-            <Button onClick={snoozeAt} className="w_full" variant="outline" disabled={disabled}>Snooze At</Button>
+        )}
+
+        {/* Header */}
+        <div className="relative z-10 mb-4">
+          <div className="flex items-center gap-2 mb-1">
+            <span className={`w-5 h-5 ${active ? 'text-black' : 'text-gray-700'}`}>
+              {/* Simple upward trend icon */}
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M3 17l6-6 4 4 7-7"/><path d="M14 5h7v7"/></svg>
+            </span>
+            <h3 className={`font-semibold text-lg ${active ? 'text-black' : 'text-gray-900'}`}>Growth Plan</h3>
           </div>
+          <p className={`text-sm ${active ? 'text-gray-700' : 'text-gray-500'}`}>{dailyPercent ?? '—'}% daily • {days ?? '—'} days</p>
         </div>
-      </details>
+
+        {/* Expected Profit */}
+        <div className="relative z-10 text-center mb-6">
+          <p className={`text-sm mb-2 ${active ? 'text-gray-700' : 'text-gray-600'}`}>Expected Profit</p>
+          <div className="mb-1">
+            <AnimatedNumber value={profitNumber} className="text-4xl font-medium leading-tight" style={{ color: '#240076' }} />
+          </div>
+          <p className={`text-sm font-medium ${active ? 'text-gray-700' : 'text-gray-500'}`}>$DEGEN</p>
+        </div>
+
+        {/* Amount input */}
+        <div className="relative z-10 mb-6">
+          <label className={`block text-sm font-medium mb-2 ${active ? 'text-gray-700' : 'text-gray-700'}`}>Investment Amount</label>
+          <input
+            type="number"
+            placeholder="1 DEGEN"
+            value={amount}
+            onChange={(e)=>setAmount(e.target.value)}
+            className={`w-full px-4 py-2.5 rounded-md text-base font-medium transition-all bg-white text-gray-900 placeholder-gray-400 border border-gray-300 focus:border-gray-400 focus:outline-none focus:ring-0`}
+          />
+        </div>
+
+        {/* Actions */}
+        <div className="relative z-10 space-y-2.5 mb-4">
+          <button
+            onClick={approveThenInvest}
+            disabled={!address || isPending || depositAmount<=0n}
+            className={`w-full py-2.5 px-4 rounded-md font-semibold text-sm transition-all ${
+              active ? 'bg-purple-600 hover:bg-purple-700 text-white' : 'bg-black hover:bg-gray-800 text-white'
+            }`}
+          >
+            Invest
+          </button>
+          <button
+            onClick={withdraw}
+            disabled={disabled || isPending}
+            className={`w-full py-2.5 px-4 rounded-md font-semibold text-sm transition-all ${
+              active ? 'bg-purple-300/30 hover:bg-purple-300/40 text-black border border-gray-300' : 'bg-gray-200 hover:bg-gray-300 text-gray-700 border border-gray-300'
+            }`}
+          >
+            Withdraw
+          </button>
+        </div>
+
+        {/* Advanced options */}
+        <div className="relative z-10">
+          <button
+            onClick={() => setAdvancedOpen(o=>!o)}
+            className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+              active ? 'text-gray-700 hover:text-black' : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            <span className={`w-4 h-4 transition-transform ${advancedOpen ? 'rotate-180' : ''}`}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><polyline points="6 9 12 15 18 9"/></svg>
+            </span>
+            Advanced options
+          </button>
+
+          {advancedOpen && (
+            <div className={`mt-3 p-4 rounded-md space-y-3 ${active ? 'bg-white/50 border border-gray-300' : 'bg-white border border-gray-200'}`}>
+              <div>
+                <label className={`block text-xs font-medium mb-1 ${active ? 'text-gray-700' : 'text-gray-700'}`}>Extend Lock Period (days)</label>
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    placeholder="0"
+                    value={snoozeDays}
+                    onChange={(e)=>setSnoozeDays(e.target.value)}
+                    className="flex-1 px-3 py-2 text-sm rounded-md bg-white text-gray-900 placeholder-gray-400 border border-gray-300 focus:border-gray-400 focus:outline-none focus:ring-0"
+                  />
+                  <button
+                    onClick={snoozeAll}
+                    disabled={disabled}
+                    className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${active ? 'bg-purple-200 text-black hover:bg-purple-300 border border-gray-300' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300'}`}
+                  >
+                    Snooze
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
