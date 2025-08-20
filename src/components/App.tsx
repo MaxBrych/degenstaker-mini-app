@@ -104,7 +104,7 @@ export default function App(
       <Header neynarUser={neynarUser} />
 
       {/* Main content */}
-      <div className="container py-2 pb-6">
+      <div className="container py-2 pb-6 px-4">
         {/* Tab content rendering only */}
         {currentTab === Tab.Home && <HomeTab />}
         {currentTab === Tab.Actions && <ActionsTab />}

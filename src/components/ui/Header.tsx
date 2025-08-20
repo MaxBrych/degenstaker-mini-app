@@ -22,7 +22,7 @@ export function Header({ neynarUser: _neynarUser }: HeaderProps) {
   }, [displayHandle]);
 
   return (
-    <div className="px-6 pt-6">
+    <div className="px-4 pt-6">
       <div className="flex items-center gap-4">
         {displayPfp ? (
           // eslint-disable-next-line @next/next/no-img-element
