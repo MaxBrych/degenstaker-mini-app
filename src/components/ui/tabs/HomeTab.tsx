@@ -4,14 +4,12 @@ import { useEffect, useMemo, useState } from "react";
 import { formatUnits, parseUnits, zeroAddress, encodeFunctionData } from "viem";
 import { useAccount, useReadContract, useWriteContract, useSendTransaction } from "wagmi";
 import { base } from "wagmi/chains";
-import { Button } from "../Button";
 import { NumericFormat } from "react-number-format";
 import NumberFlow from "@number-flow/react";
-import AnimatedChart from "../AnimatedChart";
 import { STAKER_ABI, STAKER_ADDRESS, ERC20_ABI, DEGEN_ADDRESS } from "~/lib/staking";
 import { useMiniApp } from "@neynar/react";
 import { useSession } from "next-auth/react";
-import { NeynarAuthButton } from "../NeynarAuthButton";
+// import { NeynarAuthButton } from "../NeynarAuthButton";
 
 export function HomeTab() {
   const { context } = useMiniApp();
@@ -71,7 +69,7 @@ export function HomeTab() {
     }
     fetchProfile();
     return () => { active = false; };
-  }, [address, context?.user?.fid]);
+  }, [address, context]);
 
   // lightweight toast system
   type ToastType = 'success' | 'error';
@@ -89,55 +87,45 @@ export function HomeTab() {
   const displayFid = (context as any)?.user?.fid || (profile as any)?.fid || '-';
 
   return (
-    <div className="space-y-4 px-4 w-full max-w-md mx-auto">
-      {!isNeynarAuthed && !address && (
-        <div className="rounded-md border border-gray-700 p-3 text-center space-y-2">
-          <div className="text-sm font-medium">Sign in with Neynar to interact</div>
-          <p className="text-xs text-gray-500 dark:text-gray-400">You can explore plans and returns. Connect with Farcaster to invest, withdraw, or snooze.</p>
-          <div className="flex justify-center">
-            <NeynarAuthButton />
+    <div className="space-y-6 px-0 w-full max-w-md mx-auto">
+      {/* Stats cards row */}
+      <div className="px-6">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="bg-white/10 backdrop-blur rounded-2xl p-4 border border-white/10">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center shadow-inner">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/icons/staked_icon.png" alt="staked" className="h-6 w-6" />
+              </div>
+              <div>
+                <div className="text-white/70 text-xs">Total Stackd</div>
+                <div className="text-white text-xl font-semibold">
+                  {(() => {
+                    const v = investMin?.data ? Number(formatUnits(investMin.data as bigint, 18)) : 233.342;
+                    return v.toLocaleString(undefined, { maximumFractionDigits: 3 });
+                  })()}
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      )}
-      {/* Modern slick header above cards */}
-      <div className="relative overflow-hidden rounded-2xl border border-gray-200 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 p-4">
-        <div className="flex items-center gap-3">
-          {displayPfp ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={displayPfp} alt="pfp" className="w-12 h-12 rounded-xl object-cover" />
-          ) : (
-            <div className="w-12 h-12 rounded-xl bg-gray-700" />
-          )}
-          <div className="flex-1">
-            <div className="text-sm text-gray-500">Welcome back</div>
-            <div className="text-base font-semibold">{displayHandle ? `@${displayHandle}` : 'Unknown user'}</div>
-          </div>
-          <div className="text-right">
-            <div className="text-[10px] uppercase tracking-wide text-gray-500">FID</div>
-            <div className="text-sm font-mono">{displayFid}</div>
-          </div>
-        </div>
-        <div className="mt-3 grid grid-cols-3 gap-2 text-center">
-          <div className="rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 px-2 py-2">
-            <div className="text-[10px] text-gray-500">Daily</div>
-            <div className="text-sm font-semibold">{(() => {
-              const p = 7.7; return `${p}%`;
-            })()}</div>
-          </div>
-          <div className="rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 px-2 py-2">
-            <div className="text-[10px] text-gray-500">Term</div>
-            <div className="text-sm font-semibold">21d</div>
-          </div>
-          <div className="rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 px-2 py-2">
-            <div className="text-[10px] text-gray-500">Min</div>
-            <div className="text-sm font-semibold">{investMin.data ? `${formatUnits(investMin.data as bigint, 18)} DEGEN` : '-'}</div>
+          <div className="bg-white/10 backdrop-blur rounded-2xl p-4 border border-white/10">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center shadow-inner">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/icons/investors_icon.png" alt="investors" className="h-6 w-6" />
+              </div>
+              <div>
+                <div className="text-white/70 text-xs">Investors</div>
+                <div className="text-white text-xl font-semibold">233</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <Stats address={address as `0x${string}` | undefined} />
+      {/* Plan card follows */}
 
       {/* Mobile: horizontal scrollable row with snapping */}
-      <div className="md:hidden">
+      <div className="md:hidden px-6">
         <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-3 -mx-4 px-4">
           {[0,1,2].map((idx) => (
             <div key={idx} className="snap-center shrink-0 w-[85%]">
@@ -157,7 +145,7 @@ export function HomeTab() {
         </div>
       </div>
       {/* Desktop: three-column grid */}
-      <div className="hidden md:grid md:grid-cols-3 md:gap-4">
+      <div className="hidden md:grid md:grid-cols-3 md:gap-4 px-6">
         {[0,1,2].map((idx) => (
           <StakingCard
             key={idx}
@@ -174,7 +162,9 @@ export function HomeTab() {
         ))}
       </div>
 
-      <DepositsList address={address as `0x${string}` | undefined} />
+      <div className="px-6">
+        <DepositsList address={address as `0x${string}` | undefined} />
+      </div>
 
       {/* Toasts */}
       <div className="fixed bottom-4 left-1/2 -translate-x-1/2 space-y-2 z-50 w-[92%] max-w-sm">
@@ -334,53 +324,49 @@ function StakingCard({ planIndex, investMin, writeContract, isPending, address, 
   return (
     <div className="relative max-w-sm mx-auto">
       <div
-        className={`relative h-[460px] rounded-xl p-6 transition-colors duration-500 overflow-hidden ${
-          active ? 'text-black' : 'bg-gray-50 text-gray-900 border border-gray-200'
+        className={`relative h-[520px] rounded-3xl p-6 transition-colors duration-500 overflow-hidden border border-white/15 ${
+          active ? 'text-white bg-white/10' : 'bg-white/5 text-white'
         }`}
-        style={{ backgroundColor: active ? '#EDE6F7' as const : undefined }}
       >
-        {active && (
-          <div className="absolute inset-0">
-            <AnimatedChart isActive={active} returnValue={profitNumber} color="purple" />
-          </div>
-        )}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute -right-10 top-24 w-72 h-72 bg-purple-600/30 rounded-full blur-3xl" />
+          <div className="absolute -left-10 bottom-10 w-56 h-56 bg-purple-400/20 rounded-full blur-3xl" />
+        </div>
 
         {/* Popular badge (centered) for plan 1 */}
         {planIndex === 1 && (
-          <div className="absolute -top-1 left-1/2 -translate-x-1/2 z-20">
-            <span className="bg-purple-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow">Popular</span>
+          <div className="absolute -top-2 left-1/2 -translate-x-1/2 z-20">
+            <span className="bg-white text-purple-800 text-xs font-bold px-3 py-1 rounded-full shadow-sm">Popular</span>
           </div>
         )}
 
         {/* Header */}
         <div className="relative z-10 mb-4">
-          <div className="flex items-center gap-2 mb-1">
-            <span className={`w-5 h-5 ${active ? 'text-black' : 'text-gray-700'}`}>
-              {/* Simple upward trend icon */}
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M3 17l6-6 4 4 7-7"/><path d="M14 5h7v7"/></svg>
-            </span>
-            <h3 className={`font-semibold text-lg ${active ? 'text-black' : 'text-gray-900'}`}>Growth Plan</h3>
+          <div className="flex items-center gap-3 mb-2">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/illus/plan01.png" alt="plan" className="w-7 h-7" />
+            <h3 className="font-semibold text-xl text-white">Growth Plan</h3>
           </div>
-          <p className={`text-sm ${active ? 'text-gray-700' : 'text-gray-500'}`}>{dailyPercent ?? '—'}% daily • {days ?? '—'} days</p>
+          <p className="text-white/70 text-sm">{dailyPercent ?? '—'}% daily • {days ?? '—'} days</p>
         </div>
 
         {/* Expected Profit */}
         <div className="relative z-10 text-center mb-6">
-          <p className={`text-sm mb-2 ${active ? 'text-gray-700' : 'text-gray-600'}`}>Expected Profit</p>
+          <p className="text-white/80 text-sm mb-2">Expected Profit</p>
           <div className="mb-1">
             <NumberFlow
               value={profitNumber}
               format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
-              className="text-4xl font-medium leading-tight"
-              style={{ color: active ? '#240076' : '#9ca3af' }}
+              className="text-6xl font-extrabold leading-tight drop-shadow-lg"
+              style={{ color: '#d3b5ff' }}
             />
           </div>
-          <p className={`text-sm font-medium ${active ? 'text-gray-700' : 'text-gray-500'}`}>$DEGEN</p>
+          <p className="text-white/80 text-sm font-medium">$DEGEN</p>
         </div>
 
         {/* Amount input */}
         <div className="relative z-10 mb-6">
-          <label className={`block text-sm font-medium mb-2 ${active ? 'text-gray-700' : 'text-gray-700'}`}>Investment Amount</label>
+          <label className="block text-sm font-medium mb-2 text-white/80">Investment Amount</label>
           <NumericFormat
             placeholder="1 DEGEN"
             value={amount}
@@ -388,27 +374,23 @@ function StakingCard({ planIndex, investMin, writeContract, isPending, address, 
             thousandSeparator
             decimalScale={2}
             allowNegative={false}
-            className={`w-full px-4 py-2.5 rounded-md text-base font-medium transition-all bg-white text-gray-900 placeholder-gray-400 border border-gray-300 focus:border-gray-400 focus:outline-none focus:ring-0`}
+            className={`w-full px-4 py-3 rounded-xl text-base font-semibold transition-all bg-white/10 text-white placeholder-white/60 border border-white/20 focus:border-white/40 focus:outline-none focus:ring-0`}
           />
         </div>
 
         {/* Actions */}
-        <div className="relative z-10 space-y-2.5 mb-4">
+        <div className="relative z-10 space-y-3 mb-4">
           <button
             onClick={approveThenInvest}
             disabled={!address || isPending || depositAmount<=0n}
-            className={`w-full py-2.5 px-4 rounded-md font-semibold text-sm transition-all ${
-              active ? 'bg-purple-600 hover:bg-purple-700 text-white' : 'bg-black hover:bg-gray-800 text-white'
-            }`}
+            className={`w-full py-3 px-4 rounded-xl font-semibold text-base transition-all bg-white text-purple-900 hover:bg-white/90`}
           >
             Invest
           </button>
           <button
             onClick={withdraw}
             disabled={disabled || isPending}
-            className={`w-full py-2.5 px-4 rounded-md font-semibold text-sm transition-all ${
-              active ? 'bg-purple-300/30 hover:bg-purple-300/40 text-black border border-gray-300' : 'bg-gray-200 hover:bg-gray-300 text-gray-700 border border-gray-300'
-            }`}
+            className={`w-full py-3 px-4 rounded-xl font-semibold text-base transition-all bg-white/10 hover:bg-white/15 text-white border border-white/20`}
           >
             Withdraw
           </button>
@@ -418,9 +400,7 @@ function StakingCard({ planIndex, investMin, writeContract, isPending, address, 
         <div className="relative z-10">
           <button
             onClick={() => setAdvancedOpen(o=>!o)}
-            className={`flex items-center gap-2 text-sm font-medium transition-colors ${
-              active ? 'text-gray-700 hover:text-black' : 'text-gray-600 hover:text-gray-900'
-            }`}
+            className={`flex items-center gap-2 text-sm font-medium text-white/80 hover:text-white transition-colors`}
           >
             <span className={`w-4 h-4 transition-transform ${advancedOpen ? 'rotate-180' : ''}`}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><polyline points="6 9 12 15 18 9"/></svg>
@@ -429,21 +409,21 @@ function StakingCard({ planIndex, investMin, writeContract, isPending, address, 
           </button>
 
           {advancedOpen && (
-            <div className={`mt-3 p-4 rounded-md space-y-3 ${active ? 'bg-white/50 border border-gray-300' : 'bg-white border border-gray-200'}`}>
+            <div className={`mt-3 p-4 rounded-2xl space-y-3 bg-white/5 border border-white/15`}>
               <div>
-                <label className={`block text-xs font-medium mb-1 ${active ? 'text-gray-700' : 'text-gray-700'}`}>Extend Lock Period (days)</label>
+                <label className={`block text-xs font-medium mb-1 text-white/80`}>Extend Lock Period (days)</label>
                 <div className="flex gap-2">
                   <input
                     type="number"
                     placeholder="0"
                     value={snoozeDays}
                     onChange={(e)=>setSnoozeDays(e.target.value)}
-                    className="flex-1 px-3 py-2 text-sm rounded-md bg-white text-gray-900 placeholder-gray-400 border border-gray-300 focus:border-gray-400 focus:outline-none focus:ring-0"
+                    className="flex-1 px-3 py-2 text-sm rounded-lg bg-white/10 text-white placeholder-white/60 border border-white/20 focus:border-white/40 focus:outline-none focus:ring-0"
                   />
                   <button
                     onClick={snoozeAll}
                     disabled={disabled}
-                    className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${active ? 'bg-purple-200 text-black hover:bg-purple-300 border border-gray-300' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300'}`}
+                    className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors bg-white text-purple-900 hover:bg-white/90`}
                   >
                     Snooze
                   </button>
@@ -461,33 +441,34 @@ function DepositsList({ address }: { address?: `0x${string}` }) {
   const deposits = useReadContract({ address: STAKER_ADDRESS, abi: STAKER_ABI, functionName: 'getUserDeposits', args: [address ?? zeroAddress], chainId: base.id });
   const data = deposits.data as any[] | undefined;
   return (
-    <div className="space-y-2">
-      <div className="text-sm font-medium">Your Deposits</div>
-      {!data?.length && <div className="text-xs text-gray-500">No deposits yet.</div>}
-      {data?.map((d, i) => (
-        <div key={i} className="rounded-xl border border-primary/20 bg-primary/5 p-3 text-xs grid grid-cols-2 gap-2">
-          <div><span className="text-gray-400">Plan</span><div className="font-medium">{Number(d[0])}</div></div>
-          <div><span className="text-gray-400">Amount</span><div className="font-medium">{formatUnits(d[2] as bigint, 18)} DEGEN</div></div>
-          <div><span className="text-gray-400">Profit</span><div className="font-medium">{formatUnits(d[3] as bigint, 18)} DEGEN</div></div>
-          <div className="flex items-center gap-2">
-            <div>
-              <span className="text-gray-400">Finish</span>
-              <div className="font-medium">{new Date(Number(d[5]) * 1000).toLocaleDateString()}</div>
+    <div className="space-y-4">
+      {!data?.length && (
+        <div className="bg-white/10 border border-white/15 rounded-2xl p-4 text-white/70 text-sm">No deposits yet.</div>
+      )}
+      {data?.map((d, i) => {
+        const now = Math.floor(Date.now()/1000);
+        const finish = Number(d[5]);
+        const remaining = Math.max(0, finish - now);
+        const hrs = Math.floor(remaining / 3600);
+        const mins = Math.floor((remaining % 3600) / 60);
+        const amount = formatUnits(d[2] as bigint, 18);
+        return (
+          <div key={i} className="relative overflow-hidden bg-white/10 border border-white/15 rounded-3xl p-5">
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-80">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/illus/plan02.png" alt="chips" className="w-20 h-20" />
             </div>
-            {(() => {
-              const now = Math.floor(Date.now()/1000);
-              const finish = Number(d[5]);
-              const remaining = finish - now;
-              const ready = remaining <= 0;
-              return (
-                <span className={`px-2 py-0.5 rounded-full text-[10px] ${ready ? 'bg-green-600 text-white' : 'bg-yellow-500/20 text-yellow-800 dark:text-yellow-300'}`}>
-                  {ready ? 'Ready' : `~${Math.ceil(remaining/3600)}h`}
-                </span>
-              );
-            })()}
+            <div className="text-white/80 text-sm">Time remaining</div>
+            <div className="text-white text-2xl font-extrabold tracking-tight">{Number(amount).toLocaleString()} $DEGEN</div>
+            <div className="mt-3 inline-flex items-center gap-2 bg-white/10 border border-white/15 rounded-xl px-3 py-2">
+              <span className="w-5 h-5 text-white/80">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </span>
+              <span className="text-white font-semibold tracking-wider">{String(hrs).padStart(2,'0')}:{String(mins).padStart(2,'0')}</span>
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

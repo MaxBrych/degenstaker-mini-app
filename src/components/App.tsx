@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useMiniApp } from "@neynar/react";
 import { Header } from "~/components/ui/Header";
 import { HomeTab, ActionsTab, ContextTab, WalletTab } from "~/components/ui/tabs";
-import { USE_WALLET } from "~/lib/constants";
+// import { USE_WALLET } from "~/lib/constants";
 import { useNeynarUser } from "../hooks/useNeynarUser";
 
 // --- Types ---
@@ -49,14 +49,14 @@ export interface AppProps {
  * ```
  */
 export default function App(
-  { title }: AppProps = { title: "Neynar Starter Kit" }
+  { title: _title }: AppProps = { title: "Neynar Starter Kit" }
 ) {
   // --- Hooks ---
   const {
     isSDKLoaded,
     context,
     setInitialTab,
-    setActiveTab,
+    setActiveTab: _setActiveTab,
     currentTab,
   } = useMiniApp();
 
@@ -98,22 +98,18 @@ export default function App(
         paddingLeft: context?.client.safeAreaInsets?.left ?? 0,
         paddingRight: context?.client.safeAreaInsets?.right ?? 0,
       }}
+      className="min-h-screen bg-gradient-to-b from-[#1b0062] via-[#2a007f] to-[#3b0aa3]"
     >
-      {/* Header should be full width */}
+      {/* Header: avatar and handle */}
       <Header neynarUser={neynarUser} />
 
-      {/* Main content and footer should be centered */}
-      <div className="container py-2 pb-4">
-        {/* Main title */}
-        <h1 className="text-2xl font-bold text-center mb-4">{title}</h1>
-
-        {/* Tab content rendering */}
+      {/* Main content */}
+      <div className="container py-2 pb-6">
+        {/* Tab content rendering only */}
         {currentTab === Tab.Home && <HomeTab />}
         {currentTab === Tab.Actions && <ActionsTab />}
         {currentTab === Tab.Context && <ContextTab />}
         {currentTab === Tab.Wallet && <WalletTab />}
-
-        {/* Bottom nav hidden per new minimal design */}
       </div>
     </div>
   );
