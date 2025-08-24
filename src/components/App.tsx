@@ -98,7 +98,7 @@ export default function App(
         paddingLeft: context?.client.safeAreaInsets?.left ?? 0,
         paddingRight: context?.client.safeAreaInsets?.right ?? 0,
       }}
-      className="min-h-screen bg-gradient-to-b from-[#1b0062] via-[#2a007f] to-[#3b0aa3]"
+      className="min-h-screen bg-[#110039]"
     >
       {/* Header: avatar and handle */}
       <Header neynarUser={neynarUser} />

@@ -8,6 +8,7 @@ import { NumericFormat } from "react-number-format";
 import NumberFlow from "@number-flow/react";
 import AnimatedChart from "../AnimatedChart";
 import { STAKER_ABI, STAKER_ADDRESS, ERC20_ABI, DEGEN_ADDRESS } from "~/lib/staking";
+import { useWithdraw } from "~/hooks/useWithdraw";
 // import { NeynarAuthButton } from "../NeynarAuthButton";
 
 export function HomeTab() {
@@ -47,21 +48,21 @@ export function HomeTab() {
   return (
     <div className="space-y-6 px-0 w-full max-w-md mx-auto">
       {/* Stats cards row */}
-      <div className="px-4">
+      <div className="px-4 py-2">
         <div className="grid grid-cols-2 gap-4">
-          <div className="rounded-md p-4 bg-[#3B2887]">
+          <div className="rounded-lg p-4 bg-[#3B2887]">
             <div className="flex items-center gap-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/icons/staked_icon.webp" alt="staked" className="h-10 w-10" />
               <div>
-                <div className="text-white/70 text-xs">Total Stackd</div>
+                <div className="text-white/70 text-xs">Total Stacked</div>
                 <div className="text-white text-xl font-semibold">
                   {totalStaked.data ? Number(formatUnits(totalStaked.data as bigint, 18)).toLocaleString(undefined, { maximumFractionDigits: 3 }) : '—'}
                 </div>
               </div>
             </div>
           </div>
-          <div className="rounded-md p-4 bg-[#3B2887]">
+          <div className="rounded-lg p-4 bg-[#3B2887]">
             <div className="flex items-center gap-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/icons/investors_icon.webp" alt="investors" className="h-10 w-10" />
@@ -76,7 +77,7 @@ export function HomeTab() {
       {/* Plan card follows */}
 
       {/* Mobile: horizontal scrollable row with snapping */}
-      <div className="md:hidden px-4">
+      <div className="md:hidden ">
         <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-3 -mx-4 px-4">
           {[0,1,2].map((idx) => (
             <div key={idx} className="snap-center shrink-0 w-[85%]">
@@ -269,10 +270,10 @@ function StakingCard({ planIndex, investMin, writeContract, isPending, address, 
   return (
     <div className="relative max-w-sm mx-auto">
       <div
-        className={`relative h-[520px] rounded-3xl p-6 transition-colors duration-500 overflow-hidden ${
+        className={`relative min-h-[520px] rounded-md p-6 transition-all duration-300 overflow-hidden ${
           active
-            ? 'bg-gradient-to-b from-[#240077] to-[#854CFE] text-white border border-white/20'
-            : 'bg-[#3B2887] text-white'
+            ? 'bg-gradient-to-b from-[#342768] to-[#854CFE] text-white border border-white/20'
+            : 'bg-[#342768] text-white'
         }`}
       >
         <div className="absolute inset-0 pointer-events-none">
@@ -287,25 +288,25 @@ function StakingCard({ planIndex, investMin, writeContract, isPending, address, 
         )}
 
         {/* Header */}
-        <div className="relative z-10 mb-4">
-          <div className="flex items-center gap-3 mb-2">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={planIndex === 0 ? '/illus/plan01.webp' : planIndex === 1 ? '/illus/plan02.webp' : '/illus/plan03.webp'} alt="plan" className="w-7 h-7" />
+        <div className="relative z-10 mb-4 flex items-center gap-3">
+        <img src={planIndex === 0 ? '/illus/plan01.webp' : planIndex === 1 ? '/illus/plan02.webp' : '/illus/plan03.webp'} alt="plan" className="w-12 h-12" />
+
+          <div >
             <h3 className="font-semibold text-xl text-white">
               {planIndex === 0 ? 'Low risk' : planIndex === 1 ? 'Medium risk' : 'High risk'}
             </h3>
+            <p className="text-white/70 text-sm">{dailyPercent ?? '—'}% daily • {days ?? '—'} days</p>
           </div>
-          <p className="text-white/70 text-sm">{dailyPercent ?? '—'}% daily • {days ?? '—'} days</p>
         </div>
 
         {/* Expected Profit */}
-        <div className="relative z-10 text-center mb-6">
+        <div className="relative z-10 text-center mb-6 py-6">
           <p className="text-white/80 text-sm mb-2">Expected Profit</p>
-          <div className="mb-1">
+          <div className="mb-1 inline-block max-w-full">
             <NumberFlow
               value={profitNumber}
               format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
-              className="text-6xl font-medium leading-tight tracking-tight drop-shadow-lg"
+              className="text-6xl font-medium leading-tight tracking-tight drop-shadow-lg break-words"
               style={{ color: '#d3b5ff' }}
             />
           </div>
@@ -335,39 +336,6 @@ function StakingCard({ planIndex, investMin, writeContract, isPending, address, 
           >
             Invest
           </button>
-          {(() => {
-            // determine withdraw readiness for this plan
-            const nowSec = Math.floor(Date.now() / 1000);
-            const planDeposits = (deposits || []).filter((d) => Number(d[0]) === planIndex);
-            const nextFinish = planDeposits.length > 0 ? planDeposits.map((d) => Number(d[5])).sort((a,b)=>a-b)[0] : undefined;
-            const ready = planDeposits.some((d) => {
-              const finish = Number(d[5]);
-              return nowSec > finish && Number((checkpoint ?? 0n)) < finish;
-            });
-            if (ready) {
-              return (
-                <button
-                  onClick={withdraw}
-                  disabled={disabled || isPending}
-                  className={`w-full py-3 px-4 rounded-xl font-semibold text-base transition-all bg-white/10 hover:bg-white/15 text-white border border-white/20`}
-                >
-                  Withdraw
-                </button>
-              );
-            }
-            const remainingMs = nextFinish ? Math.max(0, (nextFinish * 1000) - Date.now()) : 0;
-            const hrs = String(Math.floor(remainingMs / 3_600_000)).padStart(2,'0');
-            const mins = String(Math.floor((remainingMs % 3_600_000) / 60_000)).padStart(2,'0');
-            return (
-              <div className="w-full inline-flex items-center justify-between gap-3 bg-white/10 hover:bg-white/15 text-white border border-white/20 rounded-xl px-4 py-3">
-                <span className="font-semibold text-base">{planDeposits.length>0 ? 'Time until withdraw' : 'No active deposit'}</span>
-                <span className="inline-flex items-center gap-2">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                  <span className="font-mono tracking-wider">{hrs}:{mins}</span>
-                </span>
-              </div>
-            );
-          })()}
         </div>
 
         {/* Advanced options removed per new design */}
@@ -391,6 +359,7 @@ function DepositsList({ address }: { address?: `0x${string}` }) {
     );
   }
 
+  const { withdraw } = useWithdraw();
   const planIndex = Number(latest[0]) as 0|1|2;
   const amount = Number(formatUnits(latest[2] as bigint, 18));
   const profit = Number(formatUnits(latest[3] as bigint, 18));
@@ -400,12 +369,12 @@ function DepositsList({ address }: { address?: `0x${string}` }) {
   const hrs = String(Math.floor(remaining / 3600)).padStart(2,'0');
   const mins = String(Math.floor((remaining % 3600) / 60)).padStart(2,'0');
   const title = planIndex === 0 ? 'Low risk' : planIndex === 1 ? 'Medium risk' : 'High risk';
-  const illus = planIndex === 0 ? '/illus/plan01.png' : planIndex === 1 ? '/illus/plan02.png' : '/illus/plan03.png';
+  const illus = planIndex === 0 ? '/illus/plan01.webp' : planIndex === 1 ? '/illus/plan02.webp' : '/illus/plan03.webp';
 
   const canWithdraw = now > finish;
 
   return (
-    <div className="relative overflow-hidden bg-white/10 border border-white/15 rounded-3xl p-5">
+    <div className="relative overflow-hidden bg-white/10 border border-white/15 rounded-xl p-5">
       <div className="flex items-start gap-4">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={illus} alt={title} className="w-14 h-14" />
@@ -416,18 +385,7 @@ function DepositsList({ address }: { address?: `0x${string}` }) {
           </div>
         </div>
         {canWithdraw ? (
-          <button
-            onClick={() => {
-              // direct withdraw
-              // this mirrors the per-card action
-              // user can have matured dividends, call withdraw
-              // NOTE: we piggyback HomeTab's writeContract via a refactor normally;
-              // here we simply instruct user to use card-level Withdraw if needed
-            }}
-            className="px-4 py-2 rounded-xl bg-white text-purple-900 font-semibold"
-          >
-            Withdraw
-          </button>
+          <button onClick={() => withdraw()} className="px-4 py-2 rounded bg-white text-purple-900 font-semibold">Withdraw</button>
         ) : (
           <div className="inline-flex items-center gap-2 bg-[#2c1e6b] border border-transparent rounded px-3 py-2">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-white"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
