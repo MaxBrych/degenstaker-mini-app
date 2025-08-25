@@ -1,6 +1,6 @@
 import { parseAbi } from "viem";
 
-export const STAKER_ADDRESS = "0x62ceCFCdCF3327b8F3e7EAd9503a02103Ecb4527" as const;
+export const STAKER_ADDRESS = "0xE62c75eb9981BbcA724401C61e10C936f4E9773d" as const;
 export const DEGEN_ADDRESS = "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed" as const;
 
 export const STAKER_ABI = parseAbi([

@@ -28,7 +28,7 @@ export const APP_NAME: string = 'DegenStaker';
  * A brief description of the mini app's functionality.
  * Used in app store listings and metadata.
  */
-export const APP_DESCRIPTION: string = 'A DEGEN super staking dApp';
+export const APP_DESCRIPTION: string = 'Lock your $DEGEN into 14, 21, or 28-day queues. First in, first out. Big multipliers, no guarantees, all vibes.';
 
 /**
  * The primary category for the mini app.
@@ -40,7 +40,7 @@ export const APP_PRIMARY_CATEGORY: string = 'finance';
  * Tags associated with the mini app.
  * Used for search and discovery in app stores.
  */
-export const APP_TAGS: string[] = ['degen', 'staking', 'dapp', 'roi', 'base'];
+export const APP_TAGS: string[] = ['roi', 'staking', 'degen', 'casino', 'fifo'];
 
 // --- Asset URLs ---
 /**
@@ -53,7 +53,7 @@ export const APP_ICON_URL: string = `${APP_URL}/icon.png`;
  * URL for the app's Open Graph image.
  * Used for social media sharing and previews.
  */
-export const APP_OG_IMAGE_URL: string = `${APP_URL}/api/opengraph-image`;
+export const APP_OG_IMAGE_URL: string = `${APP_URL}/thumb.png`;
 
 /**
  * URL for the app's splash screen image.
@@ -65,22 +65,25 @@ export const APP_SPLASH_URL: string = `${APP_URL}/splash.png`;
  * Background color for the splash screen.
  * Used as fallback when splash image is loading.
  */
-export const APP_SPLASH_BACKGROUND_COLOR: string = '#f7f7f7';
+export const APP_SPLASH_BACKGROUND_COLOR: string = '#7D65C0';
 
 /**
  * Account association for the mini app.
  * Used to associate the mini app with a Farcaster account.
  * If not provided, the mini app will be unsigned and have limited capabilities.
  */
-export const APP_ACCOUNT_ASSOCIATION: AccountAssociation | undefined =
-  undefined;
+export const APP_ACCOUNT_ASSOCIATION: AccountAssociation | undefined = {
+  header: "eyJmaWQiOjE4Nzg0NiwidHlwZSI6ImF1dGgiLCJrZXkiOiIweDVCZDRjNzM1OEU5MzJGOWE4OTgyZDBkRUE3RjNjMEJmMzJhOGZlZjcifQ",
+  payload: "eyJkb21haW4iOiJjb21tb24tZXllcy1zb3J0LmxvY2EubHQifQ",
+  signature: "HqAMj/6KhYKLf/8QvmlvvwpvB1trY2KphaiOk+CoAGNpkQlTxsZxno2aXXXbd2AIBy5f1o+sWzRa7EfKyighfBs="
+};
 
 // --- UI Configuration ---
 /**
  * Text displayed on the main action button.
  * Used for the primary call-to-action in the mini app.
  */
-export const APP_BUTTON_TEXT: string = 'Start staking DEGEN';
+export const APP_BUTTON_TEXT: string = 'Stake DEGEN';
 
 // --- Integration Configuration ---
 /**

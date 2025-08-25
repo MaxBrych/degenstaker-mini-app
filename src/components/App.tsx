@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useMiniApp } from "@neynar/react";
 import { Header } from "~/components/ui/Header";
 import { HomeTab, ActionsTab, ContextTab, WalletTab } from "~/components/ui/tabs";
 // import { USE_WALLET } from "~/lib/constants";
 import { useNeynarUser } from "../hooks/useNeynarUser";
+import sdk from "@farcaster/miniapp-sdk";
 
 // --- Types ---
 export enum Tab {
@@ -77,6 +78,14 @@ export default function App(
     }
   }, [isSDKLoaded, setInitialTab]);
 
+  // Notify Farcaster Mini App SDK that UI is ready (hides splash screen)
+  const readyCalledRef = useRef(false);
+  useEffect(() => {
+    if (!isSDKLoaded || readyCalledRef.current) return;
+    readyCalledRef.current = true;
+    void sdk.actions.ready();
+  }, [isSDKLoaded]);
+
   // --- Early Returns ---
   if (!isSDKLoaded) {
     return (
@@ -98,7 +107,7 @@ export default function App(
         paddingLeft: context?.client.safeAreaInsets?.left ?? 0,
         paddingRight: context?.client.safeAreaInsets?.right ?? 0,
       }}
-      className="min-h-screen bg-[#110039]"
+      className="min-h-screen bg-[#684591]"
     >
       {/* Header: avatar and handle */}
       <Header neynarUser={neynarUser} />
