@@ -1,7 +1,13 @@
 # Farcaster Mini App Manifest Documentation
 
 ## Overview
-This document explains the Farcaster manifest configuration for the DegenStaker Mini App, located at `public/.well-known/farcaster.json`.
+This document explains the Farcaster manifest configuration for the DegenStaker Mini App. The app now uses **Farcaster Hosted Manifests** for easier management and automatic validation.
+
+## Hosted Manifest Configuration
+- **Manifest ID**: `0198e1f6-d8ab-8af4-70c2-2b037e040895`
+- **Hosted URL**: `https://api.farcaster.xyz/miniapps/hosted-manifest/0198e1f6-d8ab-8af4-70c2-2b037e040895`
+- **Domain**: `degenstaker-miniapp.vercel.app`
+- **Redirect**: Configured via `vercel.json`
 
 ## Manifest Structure
 
@@ -84,11 +90,34 @@ This document explains the Farcaster manifest configuration for the DegenStaker 
 - [x] Base network (eip155:8453) support
 - [x] Proper domain canonicalization
 
-## Deployment Notes
+## Hosted Manifest Benefits
 
-1. **Domain Consistency**: Ensure all URLs use the same domain as specified in accountAssociation
-2. **Image Assets**: Verify all image URLs are accessible and meet size requirements
-3. **Webhook Endpoint**: Confirm `/api/webhook` is properly implemented
+1. **No Codebase Management**: Manifest managed through Farcaster Developer Tools
+2. **Automatic Validation**: Built-in error checking and validation
+3. **Easy Updates**: Update manifest without redeploying your app
+4. **Domain Migration**: Simplified domain changes
+5. **Version Control**: Centralized manifest versioning
+
+## Deployment Configuration
+
+### Vercel Redirect Setup
+The `vercel.json` file configures a 307 redirect:
+```json
+{
+  "redirects": [
+    {
+      "source": "/.well-known/farcaster.json",
+      "destination": "https://api.farcaster.xyz/miniapps/hosted-manifest/0198e1f6-d8ab-8af4-70c2-2b037e040895",
+      "permanent": false
+    }
+  ]
+}
+```
+
+### Deployment Notes
+1. **Vercel Deploy**: The redirect will be active after deployment
+2. **Webhook Endpoint**: Confirm `/api/webhook` is properly implemented
+3. **Image Assets**: Ensure all assets are accessible at your Vercel domain
 4. **Chain Support**: Base network integration is required for $DEGEN token operations
 
 ## Discovery & Publishing
