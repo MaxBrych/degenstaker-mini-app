@@ -1,17 +1,17 @@
 {
   "accountAssociation": {
-    "header": "eyJmaWQiOjE4Nzg0NiwidHlwZSI6ImF1dGgiLCJrZXkiOiIweDVCZDRjNzM1OEU5MzJGOWE4OTgyZDBkRUE3RjNjMEJmMzJhOGZlZjcifQ",
-    "payload": "eyJkb21haW4iOiJjb21tb24tZXllcy1zb3J0LmxvY2EubHQifQ",
-    "signature": "HqAMj/6KhYKLf/8QvmlvvwpvB1trY2KphaiOk+CoAGNpkQlTxsZxno2aXXXbd2AIBy5f1o+sWzRa7EfKyighfBs="
+    "header": "eyJmaWQiOjE4Nzg0NiwidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweDAxYTRjNjI1YWQwQzY1MjEyNEM0ZUEyMzZhODg4NGQ2M0NhREYyOWMifQ",
+    "payload": "eyJkb21haW4iOiJkZWdlbnN0YWtlci1taW5pYXBwLnZlcmNlbC5hcHAifQ",
+    "signature": "MHhiOWE3YTMyNDM0YzM5Y2Y2NWRmZGI0OTdmYTNiYzU2MzhiM2ZiZmZjOWY2MzQ4NWUxYmU5MTJhZDdhNmIzNjJlNTU3NDEzNjA3OGNiZWQ5Y2UxMzA2YTM2Mjk4YTNiMDE4ODY4NzMyMDFiMmNiNTVlZTc4NTQyNmVhNTE2MzY1ZjFi"
   },
   "miniapp": {
     "version": "1",
     "name": "DegenStaker",
-    "iconUrl": "https://common-eyes-sort.loca.lt/icon.png",
-    "homeUrl": "https://common-eyes-sort.loca.lt",
-    "splashImageUrl": "https://common-eyes-sort.loca.lt/splash.png",
+    "iconUrl": "https://degenstaker-miniapp.vercel.app/icon.png",
+    "homeUrl": "https://degenstaker-miniapp.vercel.appt",
+    "splashImageUrl": "https://degenstaker-miniapp.vercel.app/splash.png",
     "splashBackgroundColor": "#7D65C0",
-    "webhookUrl": "https://common-eyes-sort.loca.lt/api/webhook",
+    "webhookUrl": "https://degenstaker-miniapp.vercel.app/api/webhook",
     "subtitle": "High-risk, high-fun staking",
     "description": "Lock your DEGEN into 14, 21, or 28-day queues. First in, first out. Big multipliers, no guarantees, all vibes.",
     "screenshotUrls": [],
@@ -23,11 +23,11 @@
       "casino",
       "fifo"
     ],
-    "heroImageUrl": "https://common-eyes-sort.loca.lt/thumb.png",
+    "heroImageUrl": "https://degenstaker-miniapp.vercel.app/thumb.png",
     "tagline": "High-risk, high-fun staking",
     "ogTitle": "DegenStaker",
     "ogDescription": "A time-locked staking game on Base. 14–28 days. Multipliers daily. High risk, high fun.",
-    "ogImageUrl": "https://common-eyes-sort.loca.lt/thumb.png",
+    "ogImageUrl": "https://degenstaker-miniapp.vercel.app/thumb.png",
     "noindex": false,
     "requiredChains": [
       "eip155:8453"
@@ -38,6 +38,6 @@
       "wallet.requestAccount",
       "wallet.requestPermissions"
     ],
-    "canonicalDomain": "common-eyes-sort.loca.lt"
+    "canonicalDomain": "degenstaker-miniapp.vercel.app"
   }
 }
