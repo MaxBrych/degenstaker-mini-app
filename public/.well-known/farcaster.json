@@ -8,36 +8,40 @@
     "version": "1",
     "name": "DegenStaker",
     "iconUrl": "https://degenstaker-miniapp.vercel.app/icon.png",
-    "homeUrl": "https://degenstaker-miniapp.vercel.appt",
+    "homeUrl": "https://degenstaker-miniapp.vercel.app",
     "splashImageUrl": "https://degenstaker-miniapp.vercel.app/splash.png",
-    "splashBackgroundColor": "#7D65C0",
+    "splashBackgroundColor": "#684591",
     "webhookUrl": "https://degenstaker-miniapp.vercel.app/api/webhook",
-    "subtitle": "High-risk, high-fun staking",
-    "description": "Lock your DEGEN into 14, 21, or 28-day queues. First in, first out. Big multipliers, no guarantees, all vibes.",
-    "screenshotUrls": [],
+
+    "subtitle": "High risk high fun staking",
+    "description": "Lock your DEGEN into 14, 21, or 28 day queues. First in first out. Big multipliers, no guarantees, all vibes.",
+
+    "screenshotUrls": [
+      "https://degenstaker-miniapp.vercel.app/screenshots/1.png",
+      "https://degenstaker-miniapp.vercel.app/screenshots/2.png",
+      "https://degenstaker-miniapp.vercel.app/screenshots/3.png"
+    ],
     "primaryCategory": "finance",
-    "tags": [
-      "roi",
-      "staking",
-      "degen",
-      "casino",
-      "fifo"
-    ],
+    "tags": ["roi", "staking", "degen", "casino", "fifo"],
+
     "heroImageUrl": "https://degenstaker-miniapp.vercel.app/thumb.png",
-    "tagline": "High-risk, high-fun staking",
+    "tagline": "Stake DEGEN with multipliers",
     "ogTitle": "DegenStaker",
-    "ogDescription": "A time-locked staking game on Base. 14–28 days. Multipliers daily. High risk, high fun.",
+    "ogDescription": "Time locked staking on Base. 14 to 28 days. Multipliers daily. High risk high fun.",
     "ogImageUrl": "https://degenstaker-miniapp.vercel.app/thumb.png",
+
     "noindex": false,
-    "requiredChains": [
-      "eip155:8453"
-    ],
+
+    "requiredChains": ["eip155:8453"],
     "requiredCapabilities": [
-      "actions.signIn",
       "wallet.getEthereumProvider",
-      "wallet.requestAccount",
-      "wallet.requestPermissions"
+      "actions.signin"
     ],
-    "canonicalDomain": "degenstaker-miniapp.vercel.app"
+
+    "canonicalDomain": "degenstaker-miniapp.vercel.app",
+
+    "imageUrl": "https://degenstaker-miniapp.vercel.app/thumb.png",
+    "buttonTitle": "Open"
   }
+  
 }
