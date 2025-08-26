@@ -1,64 +1,61 @@
 #!/usr/bin/env node
 
 /**
- * Script to update the Vercel redirect for Farcaster hosted manifest
- * Usage: node scripts/update-manifest.js <manifestId>
- * Example: node scripts/update-manifest.js 0198e1f6-d8ab-8af4-70c2-2b037e040895
+ * Script to update the static Farcaster manifest with the correct domain
+ * Usage: node scripts/update-manifest.js <domain>
+ * Example: node scripts/update-manifest.js degenstaker-miniapp.vercel.app
  */
 
 const fs = require('fs');
 const path = require('path');
 
-const vercelConfigPath = path.join(__dirname, '../vercel.json');
+const manifestPath = path.join(__dirname, '../public/.well-known/farcaster.json');
 
-function updateManifestRedirect(manifestId) {
-  if (!manifestId) {
-    console.error('Error: Please provide a manifest ID');
-    console.log('Usage: node scripts/update-manifest.js <manifestId>');
-    console.log('Example: node scripts/update-manifest.js 0198e1f6-d8ab-8af4-70c2-2b037e040895');
+function updateManifest(domain) {
+  if (!domain) {
+    console.error('Error: Please provide a domain');
+    console.log('Usage: node scripts/update-manifest.js <domain>');
+    console.log('Example: node scripts/update-manifest.js degenstaker-miniapp.vercel.app');
     process.exit(1);
   }
+
+  // Remove protocol if provided
+  domain = domain.replace(/^https?:\/\//, '');
   
   try {
-    // Read current vercel.json or create new one
-    let vercelConfig = {};
-    if (fs.existsSync(vercelConfigPath)) {
-      vercelConfig = JSON.parse(fs.readFileSync(vercelConfigPath, 'utf8'));
-    }
+    // Read current manifest
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
     
-    // Ensure redirects array exists
-    if (!vercelConfig.redirects) {
-      vercelConfig.redirects = [];
-    }
+    // Update all URLs with new domain
+    const httpsUrl = `https://${domain}`;
     
-    // Remove existing farcaster.json redirect if it exists
-    vercelConfig.redirects = vercelConfig.redirects.filter(
-      redirect => redirect.source !== '/.well-known/farcaster.json'
-    );
+    manifest.miniapp.homeUrl = httpsUrl;
+    manifest.miniapp.iconUrl = `${httpsUrl}/icon.png`;
+    manifest.miniapp.imageUrl = `${httpsUrl}/image.png`;
+    manifest.miniapp.splashImageUrl = `${httpsUrl}/splash.png`;
+    manifest.miniapp.webhookUrl = `${httpsUrl}/api/webhook`;
+    manifest.miniapp.heroImageUrl = `${httpsUrl}/thumb.png`;
+    manifest.miniapp.ogImageUrl = `${httpsUrl}/thumb.png`;
+    manifest.miniapp.castShareUrl = `${httpsUrl}/`;
+    manifest.miniapp.canonicalDomain = domain;
     
-    // Add new redirect
-    const hostedManifestUrl = `https://api.farcaster.xyz/miniapps/hosted-manifest/${manifestId}`;
-    vercelConfig.redirects.push({
-      source: '/.well-known/farcaster.json',
-      destination: hostedManifestUrl,
-      permanent: false
-    });
+    // Write updated manifest
+    fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
     
-    // Write updated vercel.json
-    fs.writeFileSync(vercelConfigPath, JSON.stringify(vercelConfig, null, 2));
+    console.log(`✅ Manifest updated successfully for domain: ${domain}`);
+    console.log(`📍 Manifest location: ${manifestPath}`);
+    console.log(`🌐 Accessible at: ${httpsUrl}/.well-known/farcaster.json`);
     
-    console.log(`✅ Vercel redirect updated successfully!`);
-    console.log(`📍 Config location: ${vercelConfigPath}`);
-    console.log(`🔗 Manifest ID: ${manifestId}`);
-    console.log(`🌐 Hosted manifest URL: ${hostedManifestUrl}`);
-    console.log('\n🚀 Deploy to Vercel to activate the redirect!');
+    // Warn about account association
+    console.log('\n⚠️  IMPORTANT: Remember to update the account association if the domain changes!');
+    console.log('   Visit: https://farcaster.xyz/~/developers/mini-apps/manifest');
     
   } catch (error) {
-    console.error('Error updating Vercel config:', error.message);
+    console.error('Error updating manifest:', error.message);
     process.exit(1);
   }
 }
 
-// Get manifest ID from command line arguments
-const manifestId = process.argv[2];
-updateManifestRedirect(manifestId);
+// Get domain from command line arguments
+const domain = process.argv[2];
+updateManifest(domain);

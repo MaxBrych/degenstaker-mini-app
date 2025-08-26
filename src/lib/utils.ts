@@ -54,8 +54,8 @@ export function getMiniAppEmbedMetadata(ogImageUrl?: string) {
 
 export async function getFarcasterDomainManifest(): Promise<Manifest> {
   return {
-    accountAssociation: APP_ACCOUNT_ASSOCIATION,
-    frame: {
+    accountAssociation: APP_ACCOUNT_ASSOCIATION!,
+    miniapp: {
       version: '1',
       name: APP_NAME,
       homeUrl: APP_URL,
@@ -75,6 +75,15 @@ export async function getFarcasterDomainManifest(): Promise<Manifest> {
       ogImageUrl: APP_OG_IMAGE_URL,
       heroImageUrl: APP_OG_IMAGE_URL,
       castShareUrl: APP_CAST_SHARE_URL,
+      noindex: false,
+      requiredChains: ['eip155:8453'],
+      requiredCapabilities: [
+        'actions.signIn',
+        'wallet.getEthereumProvider',
+        'wallet.requestAccount',
+        'wallet.requestPermissions'
+      ],
+      canonicalDomain: 'degenstaker-miniapp.vercel.app'
     },
   };
 }

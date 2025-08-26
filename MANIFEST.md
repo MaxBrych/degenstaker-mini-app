@@ -1,13 +1,12 @@
 # Farcaster Mini App Manifest Documentation
 
 ## Overview
-This document explains the Farcaster manifest configuration for the DegenStaker Mini App. The app now uses **Farcaster Hosted Manifests** for easier management and automatic validation.
+This document explains the Farcaster manifest configuration for the DegenStaker Mini App. The app uses a **static manifest file** as the single source of truth.
 
-## Hosted Manifest Configuration
-- **Manifest ID**: `0198e1f6-d8ab-8af4-70c2-2b037e040895`
-- **Hosted URL**: `https://api.farcaster.xyz/miniapps/hosted-manifest/0198e1f6-d8ab-8af4-70c2-2b037e040895`
+## Static Manifest Configuration
+- **Location**: `public/.well-known/farcaster.json`
 - **Domain**: `degenstaker-miniapp.vercel.app`
-- **Redirect**: Configured via `vercel.json`
+- **Accessible at**: `https://degenstaker-miniapp.vercel.app/.well-known/farcaster.json`
 
 ## Manifest Structure
 
@@ -90,34 +89,26 @@ This document explains the Farcaster manifest configuration for the DegenStaker 
 - [x] Base network (eip155:8453) support
 - [x] Proper domain canonicalization
 
-## Hosted Manifest Benefits
+## Static Manifest Benefits
 
-1. **No Codebase Management**: Manifest managed through Farcaster Developer Tools
-2. **Automatic Validation**: Built-in error checking and validation
-3. **Easy Updates**: Update manifest without redeploying your app
-4. **Domain Migration**: Simplified domain changes
-5. **Version Control**: Centralized manifest versioning
+1. **Full Control**: Complete control over manifest content and timing
+2. **Version Control**: Manifest changes tracked in git with your code
+3. **No External Dependencies**: No reliance on external hosted services
+4. **Immediate Updates**: Changes deploy with your application
+5. **Transparency**: Manifest content visible in your repository
 
 ## Deployment Configuration
 
-### Vercel Redirect Setup
-The `vercel.json` file configures a 307 redirect:
-```json
-{
-  "redirects": [
-    {
-      "source": "/.well-known/farcaster.json",
-      "destination": "https://api.farcaster.xyz/miniapps/hosted-manifest/0198e1f6-d8ab-8af4-70c2-2b037e040895",
-      "permanent": false
-    }
-  ]
-}
-```
+### Static File Serving
+The manifest is served directly by your web server at `/.well-known/farcaster.json`:
+- **File Location**: `public/.well-known/farcaster.json`
+- **URL**: `https://your-domain/.well-known/farcaster.json`
+- **Content Type**: `application/json`
 
 ### Deployment Notes
-1. **Vercel Deploy**: The redirect will be active after deployment
+1. **Static Deploy**: The manifest deploys with your application
 2. **Webhook Endpoint**: Confirm `/api/webhook` is properly implemented
-3. **Image Assets**: Ensure all assets are accessible at your Vercel domain
+3. **Image Assets**: Ensure all assets are accessible at your domain
 4. **Chain Support**: Base network integration is required for $DEGEN token operations
 
 ## Discovery & Publishing
