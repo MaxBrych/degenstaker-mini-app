@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import App from "./app";
-import { APP_NAME, APP_DESCRIPTION, APP_OG_IMAGE_URL } from "~/lib/constants";
+import { APP_NAME, APP_OG_DESCRIPTION, APP_OG_IMAGE_URL } from "~/lib/constants";
 import { getMiniAppEmbedMetadata } from "~/lib/utils";
 
 export const revalidate = 300;
@@ -10,7 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: APP_NAME,
     openGraph: {
       title: APP_NAME,
-      description: APP_DESCRIPTION,
+      description: APP_OG_DESCRIPTION,
       images: [APP_OG_IMAGE_URL],
     },
     other: {

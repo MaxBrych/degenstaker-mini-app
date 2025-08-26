@@ -22,13 +22,13 @@ export const APP_URL: string = process.env.NEXT_PUBLIC_URL!;
  * The name of the mini app as displayed to users.
  * Used in titles, headers, and app store listings.
  */
-export const APP_NAME: string = 'DegenStaker';
+export const APP_NAME: string = 'Degen Staker';
 
 /**
  * A brief description of the mini app's functionality.
  * Used in app store listings and metadata.
  */
-export const APP_DESCRIPTION: string = 'Lock your $DEGEN into 14, 21, or 28-day queues. First in, first out. Big multipliers, no guarantees, all vibes.';
+export const APP_DESCRIPTION: string = 'Lock your DEGEN into 14, 21, or 28 day queues. First in first out. Big multipliers, no guarantees, all vibes.';
 
 /**
  * The primary category for the mini app.
@@ -40,7 +40,7 @@ export const APP_PRIMARY_CATEGORY: string = 'finance';
  * Tags associated with the mini app.
  * Used for search and discovery in app stores.
  */
-export const APP_TAGS: string[] = ['roi', 'staking', 'degen', 'casino', 'fifo'];
+export const APP_TAGS: string[] = ['roi', 'staking', 'degen', 'fifo', 'casino'];
 
 // --- Asset URLs ---
 /**
@@ -65,18 +65,14 @@ export const APP_SPLASH_URL: string = `${APP_URL}/splash.png`;
  * Background color for the splash screen.
  * Used as fallback when splash image is loading.
  */
-export const APP_SPLASH_BACKGROUND_COLOR: string = '#7D65C0';
+export const APP_SPLASH_BACKGROUND_COLOR: string = '#684591';
 
 /**
  * Account association for the mini app.
  * Used to associate the mini app with a Farcaster account.
  * If not provided, the mini app will be unsigned and have limited capabilities.
  */
-export const APP_ACCOUNT_ASSOCIATION: AccountAssociation | undefined = {
-  header: "eyJmaWQiOjE4Nzg0NiwidHlwZSI6ImF1dGgiLCJrZXkiOiIweDVCZDRjNzM1OEU5MzJGOWE4OTgyZDBkRUE3RjNjMEJmMzJhOGZlZjcifQ",
-  payload: "eyJkb21haW4iOiJjb21tb24tZXllcy1zb3J0LmxvY2EubHQifQ",
-  signature: "HqAMj/6KhYKLf/8QvmlvvwpvB1trY2KphaiOk+CoAGNpkQlTxsZxno2aXXXbd2AIBy5f1o+sWzRa7EfKyighfBs="
-};
+export const APP_ACCOUNT_ASSOCIATION: AccountAssociation | undefined = undefined;
 
 // --- UI Configuration ---
 /**
@@ -84,6 +80,30 @@ export const APP_ACCOUNT_ASSOCIATION: AccountAssociation | undefined = {
  * Used for the primary call-to-action in the mini app.
  */
 export const APP_BUTTON_TEXT: string = 'Stake DEGEN';
+
+/**
+ * App tagline for marketing purposes.
+ * Used in manifest and promotional materials.
+ */
+export const APP_TAGLINE: string = 'High risk high fun staking';
+
+/**
+ * App subtitle for brief description.
+ * Used in app store listings and previews.
+ */
+export const APP_SUBTITLE: string = 'High risk high fun staking';
+
+/**
+ * Open Graph description for social sharing.
+ * Used for link previews and social media.
+ */
+export const APP_OG_DESCRIPTION: string = 'Time locked staking on Base. 14 to 28 days. Multipliers daily. High risk high fun.';
+
+/**
+ * Cast share URL for social sharing.
+ * Used when users share the app via cast.
+ */
+export const APP_CAST_SHARE_URL: string = `${APP_URL}/`;
 
 // --- Integration Configuration ---
 /**

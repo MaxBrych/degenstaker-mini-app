@@ -4,14 +4,20 @@ import type { Metadata } from 'next';
 import { getSession } from '~/auth';
 import '~/app/globals.css';
 import { Providers } from '~/app/providers';
-import { APP_NAME, APP_DESCRIPTION } from '~/lib/constants';
+import { 
+  APP_NAME, 
+  APP_DESCRIPTION, 
+  APP_URL,
+  APP_BUTTON_TEXT,
+  APP_SPLASH_BACKGROUND_COLOR 
+} from '~/lib/constants';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { MiniAppBoot } from '~/components/MiniAppBoot';
 
 const geistSans = Geist({ subsets: ['latin'], variable: '--font-geist-sans' });
 const geistMono = Geist_Mono({ subsets: ['latin'], variable: '--font-geist-mono' });
 
-const APP_URL = 'https://degenstaker-miniapp.vercel.app';
+// APP_URL is now imported from constants
 
 /**
  * Mini App embed metadata (what the cast preview reads)
@@ -23,13 +29,13 @@ const frameMetadata = {
   version: '1', 
   imageUrl: `${APP_URL}/image.png`,
   button: {
-    title: 'Stake DEGEN',
+    title: APP_BUTTON_TEXT,
     action: {
       type: 'launch_frame',
-      name: 'Degen Staker',
+      name: APP_NAME,
       url: APP_URL,
       splashImageUrl: `${APP_URL}/splash.png`,
-      splashBackgroundColor: '#684591',
+      splashBackgroundColor: APP_SPLASH_BACKGROUND_COLOR,
     },
   },
 } as const;
