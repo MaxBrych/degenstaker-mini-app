@@ -51,8 +51,7 @@ export const metadata: Metadata = {
   },
   // ← This is the important part: Next will render these as <meta name="fc:*" .../>
   other: {
-    'fc:miniapp': JSON.stringify(frameMetadata),
-    'fc:frame': JSON.stringify(frameMetadata), // optional back-compat
+    'fc:frame': JSON.stringify(frameMetadata),
   },
 };
 

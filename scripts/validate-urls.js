@@ -100,13 +100,19 @@ function validateUrls() {
   if (hasErrors) {
     console.log('❌ Validation failed! Fix the URLs above.');
     console.log('\n🔧 To fix:');
-    console.log('1. Update manifest URLs to use https://');
-    console.log('2. Set NEXT_PUBLIC_URL environment variable to https://your-domain');
-    console.log('3. Deploy with correct environment variables');
+    console.log('1. In Vercel Dashboard → Settings → Environment Variables');
+    console.log('2. Set NEXT_PUBLIC_URL = https://degenstaker-miniapp.vercel.app');
+    console.log('3. Set NEXTAUTH_URL = https://degenstaker-miniapp.vercel.app');
+    console.log('4. Redeploy your application');
+    console.log('5. Test Farcaster Embed Tool again');
+    console.log('\n⚠️  Critical: Environment variables MUST include https:// protocol!');
     process.exit(1);
   } else {
     console.log('✅ All URLs are properly formatted!');
     console.log('🚀 Ready for deployment');
+    console.log('\n🔍 Final check:');
+    console.log('- Test manifest: https://degenstaker-miniapp.vercel.app/.well-known/farcaster.json');
+    console.log('- Test Farcaster Embed Tool with your domain');
   }
 }
 

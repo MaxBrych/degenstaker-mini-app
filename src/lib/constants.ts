@@ -13,10 +13,22 @@ import { type AccountAssociation } from '@farcaster/miniapp-core/src/manifest';
 
 // --- App Configuration ---
 /**
+ * Helper function to ensure URL has https:// protocol
+ */
+function ensureHttps(url: string): string {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  return `https://${url}`;
+}
+
+/**
  * The base URL of the application.
  * Used for generating absolute URLs for assets and API endpoints.
+ * Automatically adds https:// if missing from environment variable.
  */
-export const APP_URL: string = process.env.NEXT_PUBLIC_URL!;
+export const APP_URL: string = ensureHttps(process.env.NEXT_PUBLIC_URL!);
 
 /**
  * The name of the mini app as displayed to users.
