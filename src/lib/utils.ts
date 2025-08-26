@@ -1,6 +1,5 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { Manifest } from '@farcaster/miniapp-core/src/manifest';
 import {
   APP_BUTTON_TEXT,
   APP_DESCRIPTION,
@@ -12,8 +11,6 @@ import {
   APP_SPLASH_URL,
   APP_TAGS,
   APP_URL,
-  APP_WEBHOOK_URL,
-  APP_ACCOUNT_ASSOCIATION,
   APP_TAGLINE,
   APP_SUBTITLE,
   APP_OG_DESCRIPTION,
@@ -52,38 +49,5 @@ export function getMiniAppEmbedMetadata(ogImageUrl?: string) {
   };
 }
 
-export async function getFarcasterDomainManifest(): Promise<Manifest> {
-  return {
-    accountAssociation: APP_ACCOUNT_ASSOCIATION!,
-    miniapp: {
-      version: '1',
-      name: APP_NAME,
-      homeUrl: APP_URL,
-      iconUrl: APP_ICON_URL,
-      imageUrl: `${APP_URL}/image.png`,
-      buttonTitle: APP_BUTTON_TEXT,
-      splashImageUrl: APP_SPLASH_URL,
-      splashBackgroundColor: APP_SPLASH_BACKGROUND_COLOR,
-      webhookUrl: APP_WEBHOOK_URL,
-      subtitle: APP_SUBTITLE,
-      description: APP_DESCRIPTION,
-      primaryCategory: APP_PRIMARY_CATEGORY,
-      tags: APP_TAGS,
-      tagline: APP_TAGLINE,
-      ogTitle: APP_NAME,
-      ogDescription: APP_OG_DESCRIPTION,
-      ogImageUrl: APP_OG_IMAGE_URL,
-      heroImageUrl: APP_OG_IMAGE_URL,
-      castShareUrl: APP_CAST_SHARE_URL,
-      noindex: false,
-      requiredChains: ['eip155:8453'],
-      requiredCapabilities: [
-        'actions.signIn',
-        'wallet.getEthereumProvider',
-        'wallet.requestAccount',
-        'wallet.requestPermissions'
-      ],
-      canonicalDomain: 'degenstaker-miniapp.vercel.app'
-    },
-  };
-}
+// Note: getFarcasterDomainManifest function removed since we now use static manifest file
+// The static manifest is served from public/.well-known/farcaster.json
