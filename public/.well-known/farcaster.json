@@ -1,0 +1,47 @@
+{
+ "accountAssociation": {
+    "header": "eyJmaWQiOjE4Nzg0NiwidHlwZSI6ImF1dGgiLCJrZXkiOiIweDVCZDRjNzM1OEU5MzJGOWE4OTgyZDBkRUE3RjNjMEJmMzJhOGZlZjcifQ",
+    "payload": "eyJkb21haW4iOiJkZWdlbnN0YWtlci1taW5pYXBwLnZlcmNlbC5hcHAifQ",
+    "signature": "fGhrwX1M/x1XLamLWHx/wSF8ht8G3NFhkEkPM8TlmsI5gZ9O7ERR0G0mp/cHoiTf7ulkKnPyWOFIS6roa1JkWRs="
+  },
+  "miniapp": {
+    "version": "1",
+    "name": "DegenStaker",
+    "iconUrl": "https://degenstaker-miniapp.vercel.app/icon.png",
+    "homeUrl": "https://degenstaker-miniapp.vercel.app",
+    "splashImageUrl": "https://degenstaker-miniapp.vercel.app/splash.png",
+    "splashBackgroundColor": "#684591",
+    "webhookUrl": "https://degenstaker-miniapp.vercel.app/api/webhook",
+
+    "subtitle": "High risk high fun staking",
+    "description": "Lock your DEGEN into 14, 21, or 28 day queues. First in first out. Big multipliers, no guarantees, all vibes.",
+
+    "screenshotUrls": [
+      "https://degenstaker-miniapp.vercel.app/screenshots/1.png",
+      "https://degenstaker-miniapp.vercel.app/screenshots/2.png",
+      "https://degenstaker-miniapp.vercel.app/screenshots/3.png"
+    ],
+    "primaryCategory": "finance",
+    "tags": ["roi", "staking", "degen", "casino", "fifo"],
+
+    "heroImageUrl": "https://degenstaker-miniapp.vercel.app/thumb.png",
+    "tagline": "Stake DEGEN with multipliers",
+    "ogTitle": "DegenStaker",
+    "ogDescription": "Time locked staking on Base. 14 to 28 days. Multipliers daily. High risk high fun.",
+    "ogImageUrl": "https://degenstaker-miniapp.vercel.app/thumb.png",
+
+    "noindex": false,
+
+    "requiredChains": ["eip155:8453"],
+    "requiredCapabilities": [
+      "wallet.getEthereumProvider",
+      "actions.signin"
+    ],
+
+    "canonicalDomain": "degenstaker-miniapp.vercel.app",
+
+    "imageUrl": "https://degenstaker-miniapp.vercel.app/thumb.png",
+    "buttonTitle": "Open"
+  }
+  
+}
